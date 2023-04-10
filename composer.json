@@ -1,7 +1,8 @@
 {
   "name": "novatech/ncs-epp",
-  "description": "ZACR Epp Library Extenssion",
+  "description": "ZACR Epp Library Extension",
   "type": "library",
+  "license": "MIT",
   "authors": [
     {
       "name": "Bona Lukengu",
