@@ -42,7 +42,9 @@ class Socket
 	    private readonly string $uri = '',
 	    private readonly int    $timeout = 10
     ) {
-	    $this->config = new Config(require "config/epp.config.php");
+	    $this->config = (new Config(require "config/epp.config.php"))->epp;
+	    $this->username = $this->username ?: $this->config->server->live->username;
+	    $this->password = $this->password ?: $this->config->server->live->server->{$this->namespace}->password;
 	    $this->instantiateEppClient();
 	    $this->configureEppClientNamespaceCollection();
 	    $this->connect();
@@ -83,13 +85,9 @@ class Socket
 				'local_cert' =>  $this->config->server->live->cert_file,
 			]
 		];
-
 		$connection = new StreamSocketConnection($connectionConfig, $logger);
 		$this->client = new EPPClient($connection, $logger);
-		$this->username = $this->username ?: $this->config->server->live->username;
-		$this->password = $this->password ?: $this->config->server->live->server->{$this->namespace}->password;
 	}
-
 
 	/**
      * configureEppClientNamespaceCollection
