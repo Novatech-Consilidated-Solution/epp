@@ -17,6 +17,7 @@ use Struzik\EPPClient\SocketConnection\StreamSocketConnection;
 
 class Socket
 {
+	const APP_NAME = 'EPP Client';
     /**
      * @var EPPClient
      */
@@ -27,67 +28,74 @@ class Socket
      */
     private Config $config;
 
-    /**
-     * @param string $namespace
-     * @param string $username
-     * @param string $password
-     */
+	/**
+	 * @param string $namespace
+	 * @param string $username
+	 * @param string $password
+	 * @param string $uri
+	 * @param int $timeout
+	 */
     public function __construct(
-        protected string $namespace,
-        protected string $username = '',
-        protected string $password = ''
+	    private readonly string $namespace,
+	    private string          $username = '',
+	    private string          $password = '',
+	    private readonly string $uri = '',
+	    private readonly int    $timeout = 10
     ) {
-        $this->instantiateEppClient();
-        $this->setEppClientNamespaceCollectionOffset();
-        $this->connect();
-    }
-    /**
-     * @return void
-     */
-    private function connect(): void
-    {
-        if (! $this->isConnected()) {
-            $this->client->connect();
-            $request = new LoginRequest($this->client);
-            $request->setLogin($this->username)
-                ->setPassword($this->password)
-                ->setLanguage('en')
-                ->setProtocolVersion('1.0');
-            $this->client->send($request);
-        }
+	    $this->config = new Config(require "config/epp.config.php");
+	    $this->instantiateEppClient();
+	    $this->configureEppClientNamespaceCollection();
+	    $this->connect();
     }
 
-    /**
-     * instantiateEppClient
+	/**
+	 * @return void
+	 */
+	private function connect(): void
+	{
+		if (!$this->isConnected()) {
+			$this->client->connect();
+			$request = new LoginRequest($this->client);
+			$request->setLogin($this->username)
+				->setPassword($this->password)
+				->setLanguage('en')
+				->setProtocolVersion('1.0');
+			$this->client->send($request);
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	private function instantiateEppClient(): void
+	{
+		$uri = $this->uri ?: $this->config->server->live->server->{$this->namespace}->address;
+		$uri = $uri . ":" . $this->config->port;
+
+		$logger = new Logger(self::APP_NAME);
+		$logger->pushHandler(new StreamHandler($this->logfile(), Logger::DEBUG));
+
+		$connectionConfig = new StreamSocketConfig();
+		$connectionConfig->uri = $uri;
+		$connectionConfig->timeout = $this->timeout;
+		$connectionConfig->context = [
+			'ssl' => [
+				'local_cert' =>  $this->config->server->live->cert_file,
+			]
+		];
+
+		$connection = new StreamSocketConnection($connectionConfig, $logger);
+		$this->client = new EPPClient($connection, $logger);
+		$this->username = $this->username ?: $this->config->server->live->username;
+		$this->password = $this->password ?: $this->config->server->live->server->{$this->namespace}->password;
+	}
+
+
+	/**
+     * configureEppClientNamespaceCollection
      * @return void
      */
-    private function instantiateEppClient(): void
-    {
-        $this->config = (new Config(require "config/epp.config.php"))->epp;
-        $uri = $this->config->server->live->server->{$this->namespace}->address;
-        $uri = $uri . ":" .    $this->config->port;
-        $logger = new Logger('EPP Client');
-        $logger->pushHandler(new StreamHandler($this->logfile(), Logger::DEBUG));
-        $connectionConfig = new StreamSocketConfig();
-        $connectionConfig->uri = $uri;
-        $connectionConfig->timeout = 10;
-        $connectionConfig->context = [
-            'ssl' => [
-                'local_cert' =>  $this->config->server->live->cert_file,
-            ]
-        ];
-
-        $connection = new StreamSocketConnection($connectionConfig, $logger);
-        $this->client = new EPPClient($connection, $logger);
-        $this->username = $this->config->server->live->username;
-        $this->password = $this->config->server->live->server->{$this->namespace}->password;
-    }
-
-    /**
-     * setEppClientNamespaceOffset
-     * @return void
-     */
-    private function setEppClientNamespaceCollectionOffset(): void
+    private function configureEppClientNamespaceCollection(): void
     {
         $this->client->getNamespaceCollection()->offsetSet(
             NamespaceCollection::NS_NAME_ROOT,
