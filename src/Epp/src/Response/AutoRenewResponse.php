@@ -2,9 +2,8 @@
 
 namespace Novatech\Epp\Response;
 
-use Application\Infrastructure\Epp\Response\AutoRenew\Helper\AutoRenewInfo;
-use Struzik\EPPClient\Request\Domain\UpdateDomainRequest;
-use Struzik\EPPClient\Response\Contact\Helper\PostalInfo;
+
+use Novatech\Epp\Response\AutoRenew\Helper\AutoRenewInfo;
 use Struzik\EPPClient\Response\Domain\UpdateDomainResponse;
 
 class AutoRenewResponse extends UpdateDomainResponse
