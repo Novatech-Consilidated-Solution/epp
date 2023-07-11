@@ -29,22 +29,21 @@ class Socket
     private Config $config;
 
 	/**
-	 * @param string $namespace
+	 *
 	 * @param string $username
 	 * @param string $password
 	 * @param string $uri
 	 * @param int $timeout
 	 */
     public function __construct(
-	    private readonly string $namespace,
 	    private string          $username = '',
 	    private string          $password = '',
 	    private readonly string $uri = '',
 	    private readonly int    $timeout = 10
     ) {
 	    $this->config = (new Config(require "config/epp.config.php"))->epp;
-	    $this->username = $this->username ?: $this->config->server->live->username;
-	    $this->password = $this->password ?: $this->config->server->live->server->{$this->namespace}->password;
+	    $this->username = $this->username ?: $this->config->username;
+	    $this->password = $this->password ?: $this->config->password;
 	    $this->instantiateEppClient();
 	    $this->configureEppClientNamespaceCollection();
 	    $this->connect();
@@ -71,7 +70,7 @@ class Socket
 	 */
 	private function instantiateEppClient(): void
 	{
-		$uri = $this->uri ?: $this->config->server->live->server->{$this->namespace}->address;
+		$uri = $this->uri ?: $this->config->endpoint;
 		$uri = $uri . ":" . $this->config->port;
 
 		$logger = new Logger(self::APP_NAME);
@@ -82,7 +81,7 @@ class Socket
 		$connectionConfig->timeout = $this->timeout;
 		$connectionConfig->context = [
 			'ssl' => [
-				'local_cert' =>  $this->config->server->live->cert_file,
+				'local_cert' =>  $this->config->cert_file,
 			]
 		];
 		$connection = new StreamSocketConnection($connectionConfig, $logger);
