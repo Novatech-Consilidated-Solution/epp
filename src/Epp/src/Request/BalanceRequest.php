@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Novatech\Epp\Request;
 
 
+use Novatech\Epp\Domain\BalanceNode;
 use Novatech\Epp\Response\BalanceResponse;
 use Struzik\EPPClient\Node\Common\CommandNode;
 use Struzik\EPPClient\Node\Common\EppNode;
@@ -57,21 +58,8 @@ class BalanceRequest extends AbstractRequest
         $infoNode = InfoNode::create($this, $commandNode);
         $contactInfoNode = ContactInfoNode::create($this, $infoNode);
         ContactIdentifierNode::create($this, $contactInfoNode, $this->identifier);
-        BalanceRequest::createBalanceNode($this, $commandNode);
+        BalanceNode::create($this, $commandNode);
         TransactionIdNode::create($this, $commandNode);
     }
 
-    /**
-     * @throws \DOMException
-     */
-    public static function createBalanceNode(RequestInterface $request, \DOMElement $parentNode): \DOMElement
-    {
-        $balance = $request->getDocument()->createElement('cozacontact:balance', "true");
-        $info = $request->getDocument()->createElement('cozacontact:info');
-        $info->appendChild($balance);
-        $extension = $request->getDocument()->createElement('extension');
-        $extension->appendChild($info);
-        $parentNode->appendChild($extension);
-        return $extension;
-    }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Novatech\Epp\Request;
 
+use Novatech\Epp\Domain\AutoRenewNode;
 use Novatech\Epp\Response\AutoRenewResponse;
 use Struzik\EPPClient\Node\Common\CommandNode;
 use Struzik\EPPClient\Node\Common\EppNode;
@@ -44,31 +45,8 @@ class AutoRenewRequest extends UpdateDomainRequest
         $updateNode = UpdateNode::create($this, $commandNode);
         $domainUpdateNode = DomainUpdateNode::create($this, $updateNode);
         DomainNameNode::create($this, $domainUpdateNode, $this->domain);
-        AutoRenewRequest::createAutRenew($this, $commandNode, $this->autoRenew);
+        AutoRenewNode::create($this, $commandNode, $this->autoRenew);
         TransactionIdNode::create($this, $commandNode);
-    }
-
-    /**
-     * @throws \DOMException
-     */
-    public static function createAutRenew(
-        RequestInterface $request,
-        \DOMElement $parentNode,
-        bool $autoRenew
-    ): \DOMElement {
-        $renewNode  = $request->getDocument()->createElement('cozadomain:autorenew', $autoRenew ? "true" : "false");
-        $chg = $request->getDocument()->createElement('cozadomain:chg');
-        $chg->appendChild($renewNode);
-        $updateNode = $request->getDocument()->createElement('cozadomain:update');
-        $updateNode->setAttribute(
-            'xsi:schemaLocation',
-            'http://co.za/epp/extensions/cozadomain-1-0 coza-domain-1.0.xsd'
-        );
-        $updateNode->appendChild($chg);
-        $extension = $request->getDocument()->createElement('extension');
-        $extension->appendChild($updateNode);
-        $parentNode->appendChild($extension);
-        return $extension;
     }
 
     /**

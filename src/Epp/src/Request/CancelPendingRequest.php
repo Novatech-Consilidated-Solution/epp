@@ -2,6 +2,7 @@
 
 namespace Novatech\Epp\Request;
 
+use Novatech\Epp\Domain\PendingNode;
 use Novatech\Epp\Response\CancelPendingResponse;
 use Struzik\EPPClient\Node\Common\CommandNode;
 use Struzik\EPPClient\Node\Common\EppNode;
@@ -55,34 +56,20 @@ class CancelPendingRequest extends AbstractRequest
         return CancelPendingResponse::class;
     }
 
-    protected function handleParameters(): void
+	/**
+	 * @throws \DOMException
+	 */
+	protected function handleParameters(): void
     {
         $eppNode = EppNode::create($this);
         $commandNode = CommandNode::create($this, $eppNode);
         $updateNode = UpdateNode::create($this, $commandNode);
         $domainUpdateNode = DomainUpdateNode::create($this, $updateNode);
         DomainNameNode::create($this, $domainUpdateNode, $this->domain);
-        CancelPendingRequest::createPendingActionNode($this, $commandNode, $this->action);
+        PendingNode::create($this, $commandNode, $this->action);
         TransactionIdNode::create($this, $commandNode);
     }
 
-    /**
-     * @throws \DOMException
-     */
-    public static function createPendingActionNode(
-        RequestInterface $request,
-        \DOMElement $parentNode,
-        string $action
-    ): \DOMElement {
-        $updateNode = $request->getDocument()->createElement('cozadomain:update');
-        $updateNode->setAttribute(
-            'xsi:schemaLocation',
-            'http://co.za/epp/extensions/cozadomain-1-0 coza-domain-1.0.xsd'
-        );
-        $updateNode->setAttribute('cancelPendingAction', $action);
-        $extension = $request->getDocument()->createElement('extension');
-        $extension->appendChild($updateNode);
-        $parentNode->appendChild($extension);
-        return $extension;
-    }
+
+
 }

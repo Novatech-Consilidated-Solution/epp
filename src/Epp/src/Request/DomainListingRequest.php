@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Novatech\Epp\Request;
 
+use Novatech\Epp\Domain\DomainListingNode;
 use Novatech\Epp\Response\DomainListingResponse;
 use Struzik\EPPClient\Node\Common\CommandNode;
 use Struzik\EPPClient\Node\Common\EppNode;
@@ -56,21 +57,10 @@ class DomainListingRequest extends AbstractRequest
         $infoNode = InfoNode::create($this, $commandNode);
         $contactInfoNode = ContactInfoNode::create($this, $infoNode);
         ContactIdentifierNode::create($this, $contactInfoNode, $this->identifier);
-        DomainListingRequest::createDomainListingNode($this, $commandNode);
+        DomainListingNode::create($this, $commandNode);
         TransactionIdNode::create($this, $commandNode);
     }
 
-    /**
-     * @throws \DOMException
-     */
-    public static function createDomainListingNode(RequestInterface $request, \DOMElement $parentNode): \DOMElement
-    {
-        $balance = $request->getDocument()->createElement('cozacontact:domainListing', "true");
-        $info = $request->getDocument()->createElement('cozacontact:info');
-        $info->appendChild($balance);
-        $extension = $request->getDocument()->createElement('extension');
-        $extension->appendChild($info);
-        $parentNode->appendChild($extension);
-        return $extension;
-    }
+
+
 }
