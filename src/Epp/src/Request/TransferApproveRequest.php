@@ -6,6 +6,7 @@ use Struzik\EPPClient\Node\Common\CommandNode;
 use Struzik\EPPClient\Node\Common\EppNode;
 use Struzik\EPPClient\Node\Common\TransactionIdNode;
 use Struzik\EPPClient\Node\Common\TransferNode;
+use Struzik\EPPClient\Node\Domain\DomainNameNode;
 use Struzik\EPPClient\Node\Domain\DomainTransferNode;
 use Struzik\EPPClient\Request\AbstractRequest;
 use Struzik\EPPClient\Response\CommonResponse;
@@ -42,7 +43,8 @@ class TransferApproveRequest extends AbstractRequest
 		$eppNode = EppNode::create($this);
 		$commandNode = CommandNode::create($this, $eppNode);
 		$transferNode = TransferNode::create($this, $commandNode, TransferNode::OPERATION_APPROVE);
-		DomainTransferNode::create($this, $transferNode);
+		$domainTransferNode = DomainTransferNode::create($this, $transferNode);
+		DomainNameNode::create($this, $domainTransferNode, $this->domain);
 		TransactionIdNode::create($this, $commandNode);
 	}
 
