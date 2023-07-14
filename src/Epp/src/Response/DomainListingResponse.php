@@ -10,10 +10,12 @@ use Struzik\EPPClient\Response\Contact\InfoContactResponse;
 class DomainListingResponse extends InfoContactResponse
 {
     /**
-     * @return \DOMNodeList
+     * @return array
      */
-    public function getLatestDomains(): \DOMNodeList
+    public function getLatestDomains(): array
     {
-        return $this->get('//epp:epp/epp:response/epp:extension/cozac:infData/cozac:domain');
+	    $nodes = $this->get('//epp:epp/epp:response/epp:extension/cozac:infData/cozac:domain');
+	    return array_map(static fn (\DOMNode $node): string => $node->nodeValue, iterator_to_array($nodes));
+
     }
 }
