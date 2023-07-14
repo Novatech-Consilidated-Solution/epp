@@ -15,39 +15,50 @@ use Struzik\EPPClient\Response\ResponseInterface;
 use Struzik\EPPClient\SocketConnection\StreamSocketConfig;
 use Struzik\EPPClient\SocketConnection\StreamSocketConnection;
 
+/**
+ * Class Socket
+ * Entry Point for the EPP Client
+ *
+ * @package Novatech\Epp
+ * @author Bona Philippe Lukengu<lukengup@aim.com>
+ * @license http://www.opensource.org/licenses/mit-license.html  MIT License
+ */
+
 class Socket
 {
-	const APP_NAME = 'EPP Client';
-    /**
-     * @var EPPClient
-     */
-    private EPPClient $client;
+	/**
+	 * @var EPPClient
+	 */
+	private EPPClient $client;
+	/**
+	 * @var Config
+	 */
+	private Config $config;
 
-    /**
-     * @var Config
-     */
-    private Config $config;
+	const APP_NAME = 'epp_client';
 
 	/**
-	 *
-	 * @param string $username
-	 * @param string $password
-	 * @param string $uri
+	 * @param string|null $username
+	 * @param string|null $password
+	 * @param string|null $uri
 	 * @param int $timeout
 	 */
-    public function __construct(
-	    private string          $username = '',
-	    private string          $password = '',
-	    private readonly string $uri = '',
-	    private readonly int    $timeout = 10
-    ) {
-	    $this->config = (new Config(require "config/epp.config.php"))->epp;
-	    $this->username = $this->username ?: $this->config->username;
-	    $this->password = $this->password ?: $this->config->password;
-	    $this->instantiateEppClient();
-	    $this->configureEppClientNamespaceCollection();
-	    $this->connect();
-    }
+	public function __construct(
+		private ?string $username = null,
+		private ?string $password = null,
+		private ?string  $uri = null,
+		private readonly int $timeout = 10
+	) {
+		$this->config = new Config(require "config/epp.config.php");
+		$this->username = $this->username ?: $this->config->epp->username;
+		$this->password = $this->password ?: $this->config->epp->password;
+		$this->uri = $this->uri ?: $this->config->epp->endpoint . ':' . $this->config->epp->port;
+
+
+		$this->initializeEppClient();
+		$this->setupNamespaceCollection();
+		$this->connect();
+	}
 
 	/**
 	 * @return void
@@ -68,104 +79,98 @@ class Socket
 	/**
 	 * @return void
 	 */
-	private function instantiateEppClient(): void
+	private function initializeEppClient(): void
 	{
-		$uri = $this->uri ?: $this->config->endpoint;
-		$uri = $uri . ":" . $this->config->port;
-
 		$logger = new Logger(self::APP_NAME);
 		$logger->pushHandler(new StreamHandler($this->logfile(), Logger::DEBUG));
 
 		$connectionConfig = new StreamSocketConfig();
-		$connectionConfig->uri = $uri;
+		$connectionConfig->uri = $this->uri;
 		$connectionConfig->timeout = $this->timeout;
 		$connectionConfig->context = [
 			'ssl' => [
-				'local_cert' =>  $this->config->cert_file,
-			]
+				'local_cert' => $this->config->epp->cert_file,
+			],
 		];
 		$connection = new StreamSocketConnection($connectionConfig, $logger);
 		$this->client = new EPPClient($connection, $logger);
 	}
 
 	/**
-     * configureEppClientNamespaceCollection
-     * @return void
-     */
-    private function configureEppClientNamespaceCollection(): void
-    {
-        $this->client->getNamespaceCollection()->offsetSet(
-            NamespaceCollection::NS_NAME_ROOT,
-            'urn:ietf:params:xml:ns:epp-1.0'
-        );
-        $this->client->getNamespaceCollection()->offsetSet(
-            NamespaceCollection::NS_NAME_CONTACT,
-            'urn:ietf:params:xml:ns:contact-1.0'
-        );
-        $this->client->getNamespaceCollection()->offsetSet(
-            NamespaceCollection::NS_NAME_HOST,
-            'urn:ietf:params:xml:ns:host-1.0'
-        );
-        $this->client->getNamespaceCollection()->offsetSet(
-            NamespaceCollection::NS_NAME_DOMAIN,
-            'urn:ietf:params:xml:ns:domain-1.0'
-        );
-    }
+	 * @return void
+	 */
+	private function setupNamespaceCollection(): void
+	{
+		$namespaceCollection = $this->client->getNamespaceCollection();
 
-    /**
-     * Execute the Epp Request
-     * @param RequestInterface $request
-     * @return ResponseInterface
-     */
-    public function execute(RequestInterface $request): ResponseInterface
-    {
-        return  $this->client->send($request);
-    }
+		$namespaceCollection->offsetSet(
+			NamespaceCollection::NS_NAME_ROOT,
+			'urn:ietf:params:xml:ns:epp-1.0'
+		);
+		$namespaceCollection->offsetSet(
+			NamespaceCollection::NS_NAME_CONTACT,
+			'urn:ietf:params:xml:ns:contact-1.0'
+		);
+		$namespaceCollection->offsetSet(
+			NamespaceCollection::NS_NAME_HOST,
+			'urn:ietf:params:xml:ns:host-1.0'
+		);
+		$namespaceCollection->offsetSet(
+			NamespaceCollection::NS_NAME_DOMAIN,
+			'urn:ietf:params:xml:ns:domain-1.0'
+		);
+	}
 
-    /**
-     * @return bool
-     */
-    private function isConnected(): bool
-    {
-        return $this->client->getConnection()->isOpened();
-    }
+	/**
+	 * @param RequestInterface $request
+	 * @return ResponseInterface
+	 */
+	public function execute(RequestInterface $request): ResponseInterface
+	{
+		return $this->client->send($request);
+	}
 
-    /**
-     * @return EPPClient
-     */
-    public function getClient(): EPPClient
-    {
-        return $this->client;
-    }
+	/**
+	 * @return bool
+	 */
+	private function isConnected(): bool
+	{
+		return $this->client->getConnection()->isOpened();
+	}
 
-    /**
-     * @return bool
-     */
-    public function close(): bool
-    {
-        if ($this->isConnected()) {
-            $this->logout();
-        }
-        return true;
-    }
+	/**
+	 * @return EPPClient
+	 */
+	public function getClient(): EPPClient
+	{
+		return $this->client;
+	}
 
-    /**
-     * @return void
-     */
-    private function logout()
-    {
-        $this->client->send(new LogoutRequest($this->client));
-        $this->client->disconnect();
-    }
+	/**
+	 * @return bool
+	 */
+	public function close(): bool
+	{
+		if ($this->isConnected()) {
+			$this->logout();
+		}
+		return true;
+	}
 
-    /**
-     * @return resource|void
-     */
-    private function logfile()
-    {
-        if ($handle = fopen($this->config->log_file, 'a')) {
-            return $handle;
-        }
-    }
+	/**
+	 * @return void
+	 */
+	private function logout(): void
+	{
+		$this->client->send(new LogoutRequest($this->client));
+		$this->client->disconnect();
+	}
 
+	/**
+	 * @return false|resource
+	 */
+	private function logfile()
+	{
+		return fopen($this->config->epp->log_file, 'a');
+	}
 }

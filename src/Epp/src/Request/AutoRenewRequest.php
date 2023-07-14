@@ -13,7 +13,6 @@ use Struzik\EPPClient\Node\Common\UpdateNode;
 use Struzik\EPPClient\Node\Domain\DomainNameNode;
 use Struzik\EPPClient\Node\Domain\DomainUpdateNode;
 use Struzik\EPPClient\Request\Domain\UpdateDomainRequest;
-use Struzik\EPPClient\Request\RequestInterface;
 
 class AutoRenewRequest extends UpdateDomainRequest
 {
