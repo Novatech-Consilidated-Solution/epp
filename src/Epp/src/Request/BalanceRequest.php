@@ -15,7 +15,6 @@ use Struzik\EPPClient\Node\Common\TransactionIdNode;
 use Struzik\EPPClient\Node\Contact\ContactIdentifierNode;
 use Struzik\EPPClient\Node\Contact\ContactInfoNode;
 use Struzik\EPPClient\Request\AbstractRequest;
-use Struzik\EPPClient\Request\RequestInterface;
 
 class BalanceRequest extends AbstractRequest
 {

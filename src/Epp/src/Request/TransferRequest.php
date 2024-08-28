@@ -1,6 +1,6 @@
 <?php
 
-namespace Novatech\Epp\Request\Domain;
+namespace Novatech\Epp\Request;
 
 use Struzik\EPPClient\Node\Common\CommandNode;
 use Struzik\EPPClient\Node\Common\EppNode;
