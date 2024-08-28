@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Novatech\Epp\Response\AutoRenew\Helper;
 
 use DOMElement;
+use DOMNode;
 use Struzik\EPPClient\Response\ResponseInterface;
 use UnexpectedValueException;
 
@@ -15,16 +16,16 @@ class AutoRenewInfo
      */
     private ResponseInterface $response;
     /**
-     * @var \DOMNode
+     * @var DOMNode
      */
-    private \DOMNode $node;
+    private DOMNode $node;
 
-    public function __construct(ResponseInterface $response, \DOMNode $node)
+    public function __construct(ResponseInterface $response, DOMNode $node)
     {
         if ($node->nodeName !== 'cozad:cozaData') {
             throw new UnexpectedValueException(
                 sprintf(
-                    'The name of the passed node must be "contact:postalInfo", "%s" given.',
+                    'The name of the passed node must be "cozad:cozaData", "%s" given.',
                     $node->nodeName
                 )
             );

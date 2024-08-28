@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Novatech\Epp\Request;
 
+use DOMException;
 use Novatech\Epp\Domain\DomainListingNode;
 use Novatech\Epp\Response\DomainListingResponse;
 use Struzik\EPPClient\Node\Common\CommandNode;
@@ -13,7 +14,6 @@ use Struzik\EPPClient\Node\Common\TransactionIdNode;
 use Struzik\EPPClient\Node\Contact\ContactIdentifierNode;
 use Struzik\EPPClient\Node\Contact\ContactInfoNode;
 use Struzik\EPPClient\Request\AbstractRequest;
-use Struzik\EPPClient\Request\RequestInterface;
 
 class DomainListingRequest extends AbstractRequest
 {
@@ -47,7 +47,7 @@ class DomainListingRequest extends AbstractRequest
     }
 
     /**
-     * @throws \DOMException
+     * @throws DOMException
      */
     protected function handleParameters(): void
     {

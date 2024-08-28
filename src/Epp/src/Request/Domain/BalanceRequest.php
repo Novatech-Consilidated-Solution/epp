@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Novatech\Epp\Request;
 
 
+use DOMException;
 use Novatech\Epp\Domain\BalanceNode;
 use Novatech\Epp\Response\BalanceResponse;
 use Struzik\EPPClient\Node\Common\CommandNode;
@@ -48,7 +49,7 @@ class BalanceRequest extends AbstractRequest
     }
 
     /**
-     * @throws \DOMException
+     * @throws DOMException
      */
     protected function handleParameters(): void
     {

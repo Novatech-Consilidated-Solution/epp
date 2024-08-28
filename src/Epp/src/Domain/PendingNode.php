@@ -2,6 +2,8 @@
 
 namespace Novatech\Epp\Domain;
 
+use DOMElement;
+use DOMException;
 use Struzik\EPPClient\Request\RequestInterface;
 
 /**
@@ -12,12 +14,12 @@ class PendingNode
 {
 	/**
 	 * @param RequestInterface $request
-	 * @param \DOMElement $parentNode
+	 * @param DOMElement $parentNode
 	 * @param string $action
-	 * @return \DOMElement
-	 * @throws \DOMException
+	 * @return DOMElement
+	 * @throws DOMException
 	 */
-	public static function create(RequestInterface $request, \DOMElement $parentNode, string $action): \DOMElement {
+	public static function create(RequestInterface $request, DOMElement $parentNode, string $action): DOMElement {
 		$updateNode = $request->getDocument()->createElement('cozadomain:update');
 		$updateNode->setAttribute(
 			'xsi:schemaLocation',

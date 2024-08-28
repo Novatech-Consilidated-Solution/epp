@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Novatech\Epp\Request;
 
+use DOMException;
 use Novatech\Epp\Domain\AutoRenewNode;
 use Novatech\Epp\Response\AutoRenewResponse;
 use Struzik\EPPClient\Node\Common\CommandNode;
@@ -35,7 +36,7 @@ class AutoRenewRequest extends UpdateDomainRequest
     }
 
     /**
-     * @throws \DOMException
+     * @throws DOMException
      */
     protected function handleParameters(): void
     {
@@ -56,12 +57,14 @@ class AutoRenewRequest extends UpdateDomainRequest
         return $this->autoRenew;
     }
 
-    /**
-     * @param bool $autoRenew
-     */
-    public function setAutoRenew(bool $autoRenew): void
+	/**
+	 * @param bool $autoRenew
+	 * @return $this
+	 */
+    public function setAutoRenew(bool $autoRenew): self
     {
         $this->autoRenew = $autoRenew;
+	    return $this;
     }
 
     /**
@@ -72,10 +75,11 @@ class AutoRenewRequest extends UpdateDomainRequest
         return $this->domain;
     }
 
-    /**
-     * @param string $domain
-     */
-    public function setDomain(string $domain): AutoRenewRequest
+	/**
+	 * @param string $domain
+	 * @return $this
+	 */
+    public function setDomain(string $domain): self
     {
         $this->domain = $domain;
         return $this;

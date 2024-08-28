@@ -2,6 +2,8 @@
 
 namespace Novatech\Epp\Domain;
 
+use DOMElement;
+use DOMException;
 use Struzik\EPPClient\Request\RequestInterface;
 
 /**
@@ -14,11 +16,11 @@ class BalanceNode
 {
 	/**
 	 * @param RequestInterface $request
-	 * @param \DOMElement $parentNode
-	 * @return \DOMElement
-	 * @throws \DOMException
+	 * @param DOMElement $parentNode
+	 * @return DOMElement
+	 * @throws DOMException
 	 */
-	public static function create(RequestInterface $request, \DOMElement $parentNode): \DOMElement
+	public static function create(RequestInterface $request, DOMElement $parentNode): DOMElement
 	{
 		$balance = $request->getDocument()->createElement('cozacontact:balance', "true");
 		$info = $request->getDocument()->createElement('cozacontact:info');

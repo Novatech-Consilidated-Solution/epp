@@ -47,7 +47,7 @@ class Socket
 		private ?string $username = null,
 		private ?string $password = null,
 		private ?string  $uri = null,
-		private readonly int $timeout = 10
+		private int $timeout = 10
 	) {
 		$this->config = new Config(require "config/epp.config.php");
 		$this->username = $this->username ?: $this->config->epp->username;
@@ -72,7 +72,8 @@ class Socket
 				->setPassword($this->password)
 				->setLanguage('en')
 				->setProtocolVersion('1.0');
-			$this->client->send($request);
+
+			 $this->execute($request);
 		}
 	}
 
@@ -162,7 +163,7 @@ class Socket
 	 */
 	private function logout(): void
 	{
-		$this->client->send(new LogoutRequest($this->client));
+		$this->execute(new LogoutRequest($this->client));
 		$this->client->disconnect();
 	}
 

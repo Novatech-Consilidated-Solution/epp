@@ -2,6 +2,8 @@
 
 namespace Novatech\Epp\Domain;
 
+use DOMElement;
+use DOMException;
 use Struzik\EPPClient\Request\RequestInterface;
 
 /**
@@ -16,12 +18,12 @@ class AutoRenewNode
 {
 	/**
 	 * @param RequestInterface $request
-	 * @param \DOMElement $parentNode
+	 * @param DOMElement $parentNode
 	 * @param bool $autoRenew
-	 * @return \DOMElement
-	 * @throws \DOMException
+	 * @return DOMElement
+	 * @throws DOMException
 	 */
-	public static function create(RequestInterface $request, \DOMElement $parentNode, bool $autoRenew): \DOMElement
+	public static function create(RequestInterface $request, DOMElement $parentNode, bool $autoRenew): DOMElement
 	{
 		$renewNode  = $request->getDocument()->createElement('cozadomain:autorenew', $autoRenew ? "true" : "false");
 		$chg = $request->getDocument()->createElement('cozadomain:chg');

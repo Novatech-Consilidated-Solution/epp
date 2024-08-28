@@ -2,6 +2,7 @@
 
 namespace Novatech\Epp\Request;
 
+
 use Struzik\EPPClient\Node\Common\CommandNode;
 use Struzik\EPPClient\Node\Common\EppNode;
 use Struzik\EPPClient\Node\Common\TransactionIdNode;
@@ -20,7 +21,7 @@ use Struzik\EPPClient\Response\CommonResponse;
  *
  */
 
-class TransferApproveRequest extends AbstractRequest
+class TransferRejectRequest extends AbstractRequest
 {
 	/**
 	 * @var string $domain
@@ -42,7 +43,7 @@ class TransferApproveRequest extends AbstractRequest
 	{
 		$eppNode = EppNode::create($this);
 		$commandNode = CommandNode::create($this, $eppNode);
-		$transferNode = TransferNode::create($this, $commandNode, TransferNode::OPERATION_APPROVE);
+		$transferNode = TransferNode::create($this, $commandNode, TransferNode::OPERATION_REJECT);
 		$domainTransferNode = DomainTransferNode::create($this, $transferNode);
 		DomainNameNode::create($this, $domainTransferNode, $this->domain);
 		TransactionIdNode::create($this, $commandNode);
@@ -58,10 +59,12 @@ class TransferApproveRequest extends AbstractRequest
 
 	/**
 	 * @param string $domain
+	 * @return TransferRejectRequest
 	 */
-	public function setDomain(string $domain): void
+	public function setDomain(string $domain): self
 	{
 		$this->domain = $domain;
+		return $this;
 	}
 
 

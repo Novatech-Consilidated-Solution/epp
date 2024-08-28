@@ -2,6 +2,7 @@
 
 namespace Novatech\Epp\Request;
 
+use DOMException;
 use Novatech\Epp\Domain\PendingNode;
 use Novatech\Epp\Response\CancelPendingResponse;
 use Struzik\EPPClient\Node\Common\CommandNode;
@@ -26,12 +27,14 @@ class CancelPendingRequest extends AbstractRequest
         return $this->action;
     }
 
-    /**
-     * @param string $action
-     */
-    public function setAction(string $action): void
+	/**
+	 * @param string $action
+	 * @return CancelPendingRequest
+	 */
+    public function setAction(string $action): self
     {
         $this->action = $action;
+		return $this;
     }
 
 
@@ -43,12 +46,14 @@ class CancelPendingRequest extends AbstractRequest
         return $this->domain;
     }
 
-    /**
-     * @param string $domain
-     */
-    public function setDomain(string $domain): void
+	/**
+	 * @param string $domain
+	 * @return CancelPendingRequest
+	 */
+    public function setDomain(string $domain): self
     {
         $this->domain = $domain;
+		return $this;
     }
 
     public function getResponseClass(): string
@@ -57,7 +62,7 @@ class CancelPendingRequest extends AbstractRequest
     }
 
 	/**
-	 * @throws \DOMException
+	 * @throws DOMException
 	 */
 	protected function handleParameters(): void
     {

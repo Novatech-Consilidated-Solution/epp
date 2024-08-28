@@ -24,30 +24,6 @@ return [
             "test" => [
                 "username" => getenv("EPP_SERVER_TEST_USERNAME"),
                 "password" => getenv("EPP_SERVER_TEST_PASSWORD")
-            ],
-            "live" => [
-                "username" => getenv("EPP_SERVER_USERNAME"),
-                "cert_file" => getenv("EPP_SERVER_CERT_FILE"),
-                "port" => getenv("EPP_SERVER_PORT"),
-                "address" => getenv("EPP_SERVER_ENDPOINT"),
-                "server" => [
-                    "co_za" => [
-                        "address" => getenv("EPP_SERVER_CO_ZA_SERVER"),
-                        "password" => getenv("EPP_SERVER_CO_ZA_PASSWORD")
-                    ],
-                    "org_za" => [
-                        "address" => getenv("EPP_SERVER_ORG_ZA_SERVER"),
-                        "password" => getenv("EPP_SERVER_ORG_ZA_PASSWORD")
-                    ],
-                    "net_za" => [
-                        "address" => getenv("EPP_SERVER_NET_ZA_SERVER"),
-                        "password" => getenv("EPP_SERVER_NET_ZA_PASSWORD")
-                    ],
-                    "web_za" => [
-                        "address" => getenv("EPP_SERVER_WEB_ZA_SERVER"),
-                        "password" => getenv("EPP_SERVER_WEB_ZA_PASSWORD")
-                    ],
-                ]
             ]
         ],
         "registrar" => [
