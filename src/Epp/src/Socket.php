@@ -65,16 +65,14 @@ class Socket
 	 */
 	private function connect(): void
 	{
-		if (!$this->isConnected()) {
-			$this->client->connect();
-			$request = new LoginRequest($this->client);
-			$request->setLogin($this->username)
-				->setPassword($this->password)
-				->setLanguage('en')
-				->setProtocolVersion('1.0');
+		$this->client->connect();
+		$request = new LoginRequest($this->client);
+		$request->setLogin($this->username)
+			->setPassword($this->password)
+			->setLanguage('en')
+			->setProtocolVersion('1.0');
 
-			 $this->execute($request);
-		}
+		$this->execute($request);
 	}
 
 	/**
@@ -128,7 +126,9 @@ class Socket
 	 */
 	public function execute(RequestInterface $request): ResponseInterface
 	{
-		$this->client->connect();
+		if (!$this->isConnected()) {
+			$this->connect();
+		}
 		return $this->client->send($request);
 	}
 
