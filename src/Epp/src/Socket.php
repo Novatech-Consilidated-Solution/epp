@@ -128,9 +128,7 @@ class Socket
 	 */
 	public function execute(RequestInterface $request): ResponseInterface
 	{
-		if(!$this->isConnected()) {
-			$this->connect();
-		}
+		$this->client->connect();
 		return $this->client->send($request);
 	}
 
